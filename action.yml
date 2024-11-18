@@ -1,0 +1,28 @@
+name: "committed-action"
+author: "Ed Page"
+description: "Run committed to check commit history"
+
+inputs:
+  args:
+    description: "arguments for committed"
+    required: false
+    default: "-vv --no-merge-commit"
+  commits:
+    description: "commit range to check"
+    required: false
+    default: "HEAD~..HEAD^2"
+
+runs:
+  using: "composite"
+  steps:
+    - id: committed
+      run: $GITHUB_ACTION_PATH/action/entrypoint.sh
+      shell: bash
+      env:
+        INSTALL_DIR: .
+        INPUT_ARGS: ${{ inputs.args }}
+        INPUT_COMMITS: ${{ inputs.commits }}
+
+branding:
+  icon: "git-pull-request"
+  color: "blue"

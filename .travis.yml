@@ -1,0 +1,38 @@
+sudo: false
+language: rust
+rust:
+- stable
+
+install:
+- rustc -Vv
+- cargo -V
+- export PATH=$HOME/.cargo/bin:$PATH
+
+script:
+- git log --graph --oneline
+- echo "TRAVIS_PULL_REQUEST_SHA=$TRAVIS_PULL_REQUEST_SHA"
+- echo "TRAVIS_COMMIT_RANGE=$TRAVIS_COMMIT_RANGE"
+- echo "TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH"
+# The extra verbosity is to help verify the example we're giving works and doesn't need to be copied
+- if [ -n "$TRAVIS_PULL_REQUEST_SHA" ]; then cargo run -- $TRAVIS_COMMIT_RANGE --no-merge-commit -vvvv; fi
+
+branches:
+  only:
+  # Release tags
+  - "/^v\\d+\\.\\d+\\.\\d+.*$/"
+  - master
+
+# Need to cache the whole `.cargo` directory to keep .crates.toml for
+# cargo-update to work
+cache:
+  directories:
+# But don't cache the cargo registry
+  - "/home/travis/.cargo"
+before_cache:
+- rm -rf $HOME/.cargo/registry
+# Travis can't cache files that are not readable by "others"
+- chmod -R a+r $HOME/.cargo
+
+notifications:
+  email:
+    on_success: never

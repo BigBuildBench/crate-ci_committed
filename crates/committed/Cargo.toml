@@ -1,0 +1,31 @@
+[package]
+name = "committed"
+version = "1.0.20"
+description = "Nitpicking commit history since beabf39"
+documentation = "https://docs.rs/committed"
+readme = "../../README.md"
+categories = ["development-tools", "text-processing"]
+keywords = ["development"]
+license.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+include.workspace = true
+
+[package.metadata.release]
+tag-prefix = ""
+pre-release-replacements = [
+  {file="../../CHANGELOG.md", search="Unreleased", replace="{{version}}", min=1},
+  {file="../../CHANGELOG.md", search="\\.\\.\\.HEAD", replace="...{{tag_name}}", exactly=1},
+  {file="../../CHANGELOG.md", search="ReleaseDate", replace="{{date}}", min=1},
+  {file="../../CHANGELOG.md", search="<!-- next-header -->", replace="<!-- next-header -->\n## [Unreleased] - ReleaseDate\n", exactly=1},
+  {file="../../CHANGELOG.md", search="<!-- next-url -->", replace="<!-- next-url -->\n[Unreleased]: https://github.com/crate-ci/committed/compare/{{tag_name}}...HEAD", exactly=1},
+  {file="../../action/entrypoint.sh", search="VERSION=.*", replace="VERSION={{version}}", min=1},
+  {file="../../README.md", search="rev: .*", replace="rev: {{tag_name}}", exactly=1},
+  {file="../../setup.py", search="COMMITTED_VERSION = .*", replace="COMMITTED_VERSION = '{{version}}'", exactly=1},
+]
+
+[dependencies]
+
+[lints]
+workspace = true
